@@ -5,7 +5,6 @@ subtitle:   "聊聊在线旅行行业与老东家的产品思路"
 date:       2015-06-15
 author:     "Hux"
 header-img: "img/post-bg-alitrip.jpg"
-catalog: true
 tags:
     - 产品设计
     - 阿里巴巴
