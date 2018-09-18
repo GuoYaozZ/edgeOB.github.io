@@ -155,4 +155,4 @@ void ai_for_enemy_bfs(int x, int y)
 
 ###### 源码位置
 <br>
-[github.com/edgeOB](https://github.com/edgeOB" 简单射击"){:target="_blank"}
+[github.com/edgeOB](https://github.com/edgeOB/my_course_design/blob/master/flash_for_shooting_1.cpp){:target="_blank"}
