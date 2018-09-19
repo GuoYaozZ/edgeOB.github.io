@@ -11,6 +11,7 @@ tags:
 
 * [KMP](#kmp)<br>
 * [E-kmp](#E-kmp)<br>
+* [Manacher](#Manacher)<br>
 * [Trie](#trie)<br>
 * [Aho-Corasick automaton](#Aho-Corasick-automaton)<br>
 
@@ -45,6 +46,16 @@ tags:
 <br>
 * * *
 注意到，如果有一个位置extend[i]=m,则表示T在S中出现，而且是在位置i出现，这就是标准的KMP问题，所以说拓展kmp是对KMP算法的扩展，所以一般将它称为扩展KMP算法。<br>
+
+**_题型_** <br>
+* (持续补充) <br>
+
+<span id="Manacher"></span> 
+## Manacher算法
+**参考自** <br>
+[Segmentfault-刘毅](https://segmentfault.com/a/1190000008484167){:target="_blank"} <br> 
+<kbd>Manacher</kbd>: 将寻找字符串的最长回文子串，该算法可以将时间从O(nm)提升为O(n)<br>
+跑一遍Manacher可以在O(1)的时间内判断str[ i ] [ j ]是否为回文串<br>
 
 **_题型_** <br>
 * (持续补充) <br>
