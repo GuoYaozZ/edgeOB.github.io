@@ -10,11 +10,11 @@ tags:
 ---
 >SHOOOOOOOOOOT<br>
 
-[游戏介绍](#jump1)<br>
-[------游戏内容](#jump2)<br>
-[------功能实现](#jump3)<br>
-[------存在的问题](#jump4)<br>
-[源码](#jump5)<br>
+* [游戏介绍](#jump1)<br>
+* [游戏内容](#jump2)<br>
+* [功能实现](#jump3)<br>
+* [存在的问题](#jump4)<br>
+* [源码](#jump5)<br>
 
 <span id="jump1"></span> 
 # 游戏介绍
@@ -138,7 +138,7 @@ void ai_for_enemy_bfs(int x, int y)
 }
 ```
 
-<span id="jump4"></span> 
+<span id="jump5"></span> 
 ### 存在的问题们
 * * *
 发射大量子弹的时候子弹会停下，敌人会不动？
