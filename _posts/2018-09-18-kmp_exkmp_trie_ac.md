@@ -122,4 +122,14 @@ Trie ac;
 
 <span id="Aho-Corasick-automaton"></span> 
 ## Trie+kmp的合体->Aho-Corasick automaton!
+**参考自** <br>
+[CNBLOGS-林夕-梦](https://www.cnblogs.com/cmmdc/p/7337611.html){:target="_blank"} <br> 
+Aho-Corasick automation，该算法在1975年产生于贝尔实验室，是著名的多模匹配算法之一<br>
+![avatar](/img/in-post/ac.png)
+
+博文里写的很清楚易懂，构造AC自动机的过程为：<br>
+<kbd>Tire+fail(由bfs获得)+模式匹配</kbd><br>
+
+**_题型_** <br>
+* (持续补充) <br>
 
