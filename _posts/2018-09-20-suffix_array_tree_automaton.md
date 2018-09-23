@@ -19,14 +19,14 @@ tags:
 
 >后缀数组磕了好久啊。。我太菜了<br>
 
-# 后缀数组
+# 1.后缀数组
 &ensp;&ensp;&ensp;&ensp;后缀数组是处理字符串的有力工具。后缀数组是后缀树的一个非常精巧的
 替代品，它比后缀树容易编程实现，能够实现后缀树的很多功能而时间复杂度也
 并不逊色，而且它比后缀树所占用的内存空间小很多<br>
 其中<br>**倍增算法** 仅需二十多行 ， **DC3** 仅需要四十多行<br>
-## DA
+## 1.1 DA
 
-### 首先是倍增算法
+### 1.1.1 首先是倍增算法
 倍增算法利用了 ①后缀在字符串中的应用 ②基数排序(桶排序+)<br>
 * 基数排序<br>
 "分配式排序"的一种，是桶排序的拓展，时间复杂度为O(n*digit), digit是待排序的数字的位数<br>
@@ -34,38 +34,79 @@ tags:
 **主要思路**是：用倍增的方法对每个字符开始的长度为 2k 的子字符串进行排序，求出排名，即 rank 值。k 从 0 开始，每次加 1，当 2k 大于 n 以后，每个字符开始的长度为 2k 的子字符串便相当于所有的后缀。并且这些子字符串都一定已经比较出大小，即 rank 值中没有相同的值，那么此时的 rank 值就是最后的结果。每一次排序都利用上次长度为 2k-1的字符串的 rank 值，那么长度为 2k 的字符串就可以用两个长度为 2k-1的字符串的排名作为关键字表示，然后进行基数排序，便得出了长度为 2k的字符串的 rank 值。以字符串“aabaaaab”为例，整个过程如图 2 所示。其中 x、y 是表示长度为 2k的字符串的两个关键字
 ![avatar](/img/in-post/sa1.png)
 
-<kbd>实现代码</kbd>
+<kbd>完整实现代码</kbd>
 ```cpp
-int sa[MAXN];
-int t1[MAXN],t2[MAXN],c[MAXN];
-void build_sa(int s[],int n,int m)
+const int maxn = 1000001;
+int wa[maxn],wb[maxn],wv[maxn],ws[maxn];
+int cmp(int *r,int a,int b,int l)
+{return r[a]==r[b]&&r[a+l]==r[b+l];}
+void da(int *r,int *sa,int n,int m)
 {
-    int i,j,p,*x=t1,*y=t2;
-    //第一轮基数排序，s的最大值很大时可以改用快排
-    for(i=0;i<m;i++)c[i]=0;
-    for(i=0;i<n;i++)c[x[i]=s[i]]++;
-    for(i=1;i<m;i++)c[i]+=c[i-1];
-    for(i=n-1;i>=0;i--)sa[--c[x[i]]]=i;
-    for(j=1;j<=n;j<<=1)//循环完成倍增算法的logn次
-    {   //直接利用sa数组排序第二关键字
-        for(p=0,i=n-j;i<n;i++)y[p++]=i;
-        for(i=0;i<n;i++)if(sa[i]>=j)y[p++]=sa[i]-j;
-        //基数排序第一关键字
-        for(i=0;i<m;i++)c[i]=0;
-        for(i=0;i<n;i++)c[x[y[i]]]++;
-        for(i=1;i<m;i++)c[i]+=c[i-1];
-        for(i=n-1;i>=0;i--)sa[--c[x[y[i]]]]=y[i];//根据sa和x计算新的sa数组
-        swap(x,y);
-        p=1;x[sa[0]]=0;
-        for(i=1;i<n;i++)
-            x[sa[i]]=y[sa[i-1]]==y[sa[i]] && y[sa[i-1]+j]==y[sa[i]+j]?p-1:p++;
-        if(p>=n)break;
-        m=p;//下一次基数排序的最大值
-    }
+     int i,j,p,*x=wa,*y=wb,*t;
+     for(i=0;i<m;i++) ws[i]=0;
+     for(i=0;i<n;i++) ws[x[i]=r[i]]++;
+     for(i=1;i<m;i++) ws[i]+=ws[i-1];
+     for(i=n-1;i>=0;i--) sa[--ws[x[i]]]=i;
+     for(j=1,p=1;p<n;j*=2,m=p)
+     {
+       for(p=0,i=n-j;i<n;i++) y[p++]=i;
+       for(i=0;i<n;i++) if(sa[i]>=j) y[p++]=sa[i]-j;
+       for(i=0;i<n;i++) wv[i]=x[y[i]];
+       for(i=0;i<m;i++) ws[i]=0;
+       for(i=0;i<n;i++) ws[wv[i]]++;
+       for(i=1;i<m;i++) ws[i]+=ws[i-1];
+       for(i=n-1;i>=0;i--) sa[--ws[wv[i]]]=y[i];
+       for(t=x,x=y,y=t,p=1,x[sa[0]]=0,i=1;i<n;i++)
+       x[sa[i]]=cmp(y,sa[i-1],sa[i],j)?p-1:p++;
+     }
+     return;
 }
+int rank[maxn],height[maxn];
+void calheight(int *r,int *sa,int n)
+{
+     int i,j,k=0;
+     for(i=1;i<=n;i++) rank[sa[i]]=i;
+     for(i=0;i<n;height[rank[i++]]=k)
+     for(k?k--:0,j=sa[rank[i]-1];r[i+k]==r[j+k];k++);
+     return;
+}
+int RMQ[maxn];
+int mm[maxn];
+int best[20][maxn];
+void initRMQ(int n)
+{
+     int i,j,a,b;
+     for(mm[0]=-1,i=1;i<=n;i++)
+     mm[i]=((i&(i-1))==0)?mm[i-1]+1:mm[i-1];
+     for(i=1;i<=n;i++) best[0][i]=i;
+     for(i=1;i<=mm[n];i++)
+     for(j=1;j<=n+1-(1<<i);j++)
+     {
+       a=best[i-1][j];
+       b=best[i-1][j+(1<<(i-1))];
+       if(RMQ[a]<RMQ[b]) best[i][j]=a;
+       else best[i][j]=b;
+     }
+     return;
+}
+int askRMQ(int a,int b)
+{
+    int t;
+    t=mm[b-a+1];b-=(1<<t)-1;
+    a=best[t][a];b=best[t][b];
+    return RMQ[a]<RMQ[b]?a:b;
+}
+int lcp(int a,int b)
+{
+    int t;
+    a=rank[a];b=rank[b];
+    if(a>b) {t=a;a=b;b=t;}
+    return(height[askRMQ(a+1,b)]);
+}
+
 ```
 <br>
-<kbd>部分代码解释</kbd><br>
+### 1.1.2部分代码解释
 **第一轮基数排序**
 ```cpp
 for(i=0;i<m;i++)c[i]=0;
@@ -106,26 +147,52 @@ for(i=1;i<n;i++)
 **p和n**
 执行完上面的代码后，rank值保存在 x 数组中，而变量 p 的结果实际上就是不同的字符串的个数。这里可以加一个小优化，如果 p 等于 n，那么函数可以结束。因为在当前长度的字符串中 ，已经没有相同的字符串，接下来的排序不会改变 rank 值。
 
-## DC3
+## 1.2 DC3
 **_待补充！_**
 
-# 后缀数组的应用！
-到了后缀数组的应用阶段，需要知道一些后缀数组的特殊性质
-**HEIGHT数组**<br>
+# 2.后缀数组的应用！
+#### 2.0.1 HEIGHT数组
 **height 数组：定义 height[i]=suffix(sa[i-1])和 suffix(sa[i])的最长公共前缀，也就是排名相邻的两个后缀的最长公共前缀。**<br>
 与之相关最重要的就是 **最长公共前缀LCP——后缀数组的辅助工具** 
-* 什么是LCP？<br>
-我们定义LCP(i,j)为suff(sa[i])与suff(sa[j])的最长公共前缀<br>
-* 关于LCP的几条性质<br>
+#### 2.0.2 什么是LCP？
+我们定义LCP(i,j)为suff(sa[i])与suff(sa[j])的最长公共前缀
+#### 2.0.3 关于LCP的几条性质
 <kbd>LCP(i,j)=LCP(j,i);</kbd><br>
 <kbd>LCP(i,i)=len(sa[i])=n-sa[i]+1;</kbd><br>
-这两条性质有什么用呢？对于i>j的情况，我们可以把它转化成i < j，对于i==j的情况，我们可以直接算长度，所以我们直接讨论i < j的情况就可以了。我们每次依次比较字符肯定是不行的，单次复杂度为O(n)，太高了，所以我们要做一定的预处理才行。<br>
+对于i>j的情况，我们可以把它转化成i < j，对于i==j的情况，我们可以直接算长度，所以我们直接讨论i < j的情况就可以了。我们每次依次比较字符肯定是不行的，单次复杂度为O(n)，太高了，所以我们要做一定的预处理才行。<br>
 * LCP Lemma<br>
 <kbd>LCP(i,k)=min(LCP(i,j),LCP(j,k)) 对于任意1<=i<=j<=k<=n</kbd><br>
 * LCP Theorem<br>
-<kbd>LCP(i,k)=min(LCP(j,j-1)) 对于任意1< i<= j<= k<= n</kbd><br>
-* 怎么求LCP？<br>
-我们设height[i]为LCP(i,i-1)，1< i <=n，显然height[1]=0;<br>
-由LCP Theorem可得，LCP(i,k)=min(height[j]) i+1<=j<=k<br>
-那么height怎么求，枚举吗？NONONO，我们要利用这些后缀之间的联系<br>
-设h[i]=height[rk[i]]，同样的，height[i]=h[sa[i]];<br>
+<kbd>LCP(i,k)=min(LCP(j,j-1)) 对于任意1< i<= j<= k<= n</kbd>
+
+#### 2.0.4 怎么求LCP？
+<kbd>height[rk[i]]>=height[rk[i-1]]-1，也即h[i]>=h[i-1]-1</kbd>
+```cpp
+int rank[maxn],height[maxn];
+void calheight(int *r,int *sa,int n)
+{
+    int i,j,k=0;
+    for(i=1;i<=n;i++) rank[sa[i]]=i;
+    for(i=0;i<n;height[rank[i++]]=k)
+    for(k?k--:0,j=sa[rank[i]-1];r[i+k]==r[j+k];k++);
+    return;
+}
+```
+上面是罗神的代码，不过我还是觉得bin神的代码比较简单易懂，在下面的题目类型种放出
+
+## 2.1 最长公共前缀
+&ensp;&ensp;&ensp;&ensp;给定一个字符串，询问某两个后缀的最长公共前缀。<br>
+&ensp;&ensp;&ensp;&ensp;算法分析：<br>
+&ensp;&ensp;&ensp;&ensp;按照上面所说的做法，求两个后缀的最长公共前缀可以转化为求某个区间上<br>
+的最小值。对于这个 RMQ 问题（如果对 RMQ 问题不熟悉，请阅读其他相关资料），可以用 O(nlogn)的时间先预处理，以后每次回答询问的时间为 O(1)。所以对于本问题，预处理时间为 O(nlogn)，每次回答询问的时间为 O(1)。如果 RMQ 问题用 O(n)的时间预处理，那么本问题预处理的时间可以做到 O(n)。 <br>
+* [POJ 1743](http://poj.org/problem?id=1743){:target="_blank"}
+
+## 2.2 单个字符串的相关问题
+### 2.2.1 重复子串
+### 2.2.2 子串的个数
+### 2.2.3 回文子串
+### 2.2.4 连续重复子串
+## 2.3 两个字符串的相关问题
+### 2.3.1 公共子串
+### 2.3.2 子串的个数
+## 2.4 多个字符串的相关问题
