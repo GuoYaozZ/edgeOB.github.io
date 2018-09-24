@@ -2,7 +2,7 @@
 layout:     post
 title:      "后缀数组/后缀树/后缀自动机"
 subtitle:   "总结字符串的另一部分处理问题"
-date:       2018-09-20 19:00:00
+date:       2018-09-23 09:00:00
 author:     "programfiles"
 header-img: "img/in-post/suffix.jpg"
 tags:
@@ -262,7 +262,97 @@ for(i=1;i<n;i++)
 执行完上面的代码后，rank值保存在 x 数组中，而变量 p 的结果实际上就是不同的字符串的个数。这里可以加一个小优化，如果 p 等于 n，那么函数可以结束。因为在当前长度的字符串中 ，已经没有相同的字符串，接下来的排序不会改变 rank 值。
 
 ## 1.2 DC3
-**_待补充！_**
+<kbd>罗神论文代码</kbd>
+```cpp
+const manx = 1000003;  
+#define F(x) ((x)/3+((x)%3==1?0:tb))  
+
+#define G(x) ((x)<tb?(x)*3+1:((x)-tb)*3+2) 
+
+int wa[maxn],wb[maxn],wv[maxn],ws[maxn];
+
+int c0(int *r,int a,int b)
+{return r[a]==r[b]&&r[a+1]==r[b+1]&&r[a+2]==r[b+2];}
+
+int c12(int k,int *r,int a,int b)
+{if(k==2) return r[a]<r[b]||r[a]==r[b]&&c12(1,r,a+1,b+1);
+ else return r[a]<r[b]||r[a]==r[b]&&wv[a+1]<wv[b+1];}
+
+void sort(int *r,int *a,int *b,int n,int m)
+{
+     int i;
+     for(i=0;i<n;i++) wv[i]=r[a[i]];
+     for(i=0;i<m;i++) ws[i]=0;
+     for(i=0;i<n;i++) ws[wv[i]]++;
+     for(i=1;i<m;i++) ws[i]+=ws[i-1];
+     for(i=n-1;i>=0;i--) b[--ws[wv[i]]]=a[i];
+     return;
+}
+void dc3(int *r,int *sa,int n,int m)
+{
+     int i,j,*rn=r+n,*san=sa+n,ta=0,tb=(n+1)/3,tbc=0,p;
+     r[n]=r[n+1]=0;
+     for(i=0;i<n;i++) if(i%3!=0) wa[tbc++]=i;
+     sort(r+2,wa,wb,tbc,m);
+     sort(r+1,wb,wa,tbc,m);
+     sort(r,wa,wb,tbc,m);
+     for(p=1,rn[F(wb[0])]=0,i=1;i<tbc;i++)
+     rn[F(wb[i])]=c0(r,wb[i-1],wb[i])?p-1:p++;
+     if(p<tbc) dc3(rn,san,tbc,p);
+     else for(i=0;i<tbc;i++) san[rn[i]]=i;
+     for(i=0;i<tbc;i++) if(san[i]<tb) wb[ta++]=san[i]*3;
+     if(n%3==1) wb[ta++]=n-1;
+     sort(r,wb,wa,ta,m);
+     for(i=0;i<tbc;i++) wv[wb[i]=G(san[i])]=i;
+     for(i=0,j=0,p=0;i<ta && j<tbc;p++)
+     sa[p]=c12(wb[j]%3,r,wa[i],wb[j])?wa[i++]:wb[j++];
+     for(;i<ta;p++) sa[p]=wa[i++];
+     for(;j<tbc;p++) sa[p]=wb[j++];
+     return;
+}
+int rank[maxn],height[maxn];
+void calheight(int *r,int *sa,int n)
+{
+     int i,j,k=0;
+     for(i=1;i<=n;i++) rank[sa[i]]=i;
+     for(i=0;i<n;height[rank[i++]]=k)
+     for(k?k--:0,j=sa[rank[i]-1];r[i+k]==r[j+k];k++);
+     return;
+}
+int RMQ[maxn];
+int mm[maxn];
+int best[20][maxn];
+void initRMQ(int n)
+{
+     int i,j,a,b;
+     for(mm[0]=-1,i=1;i<=n;i++)
+     mm[i]=((i&(i-1))==0)?mm[i-1]+1:mm[i-1];
+     for(i=1;i<=n;i++) best[0][i]=i;
+     for(i=1;i<=mm[n];i++)
+     for(j=1;j<=n+1-(1<<i);j++)
+     {
+       a=best[i-1][j];
+       b=best[i-1][j+(1<<(i-1))];
+       if(RMQ[a]<RMQ[b]) best[i][j]=a;
+       else best[i][j]=b;
+     }
+     return;
+}
+int askRMQ(int a,int b)
+{
+    int t;
+    t=mm[b-a+1];b-=(1<<t)-1;
+    a=best[t][a];b=best[t][b];
+    return RMQ[a]<RMQ[b]?a:b;
+}
+int lcp(int a,int b)
+{
+    int t;
+    a=rank[a];b=rank[b];
+    if(a>b) {t=a;a=b;b=t;}
+    return(height[askRMQ(a+1,b)]);
+}
+```
 
 # 2.后缀数组的应用！
 #### 2.0.1 HEIGHT数组
@@ -299,11 +389,32 @@ void calheight(int *r,int *sa,int n)
 &ensp;&ensp;&ensp;&ensp;算法分析：<br>
 &ensp;&ensp;&ensp;&ensp;按照上面所说的做法，求两个后缀的最长公共前缀可以转化为求某个区间上<br>
 的最小值。对于这个 RMQ 问题（如果对 RMQ 问题不熟悉，请阅读其他相关资料），可以用 O(nlogn)的时间先预处理，以后每次回答询问的时间为 O(1)。所以对于本问题，预处理时间为 O(nlogn)，每次回答询问的时间为 O(1)。如果 RMQ 问题用 O(n)的时间预处理，那么本问题预处理的时间可以做到 O(n)。 <br>
-* [POJ 1743](http://poj.org/problem?id=1743){:target="_blank"}
+* [POJ 1743](http://poj.org/problem?id=1743){:target="_blank"} <br>
+
+* [POJ 3261](http://poj.org/problem?id=3261){:target="_blank"} <br>
+后缀数组基础题，加上了二分算法（二分算法牛逼）
+```cpp
+int binary(int n, int m, int k)
+{
+    int cur = 1;
+    for(int i = 2; i <= n; i++){
+        if(height[i] >= k) cur++;
+        else               cur = 1;
+        if(cur >= m)       return 1;
+    }
+    return 0;
+}
+```
 
 ## 2.2 单个字符串的相关问题
 ### 2.2.1 重复子串
 ### 2.2.2 子串的个数
+
+* [SPOJ DISUBSTR](https://www.spoj.com/problems/DISUBSTR/en/){:target="_blank"} <br>
+height后缀应用题，在论文中的解释：<br>
+给定一个字符串，求不相同的子串的个数。算法分析：每个子串一定是某个后缀的前缀，那么原问题等价于求所有后缀之间的不相同的前缀的个数。如果所有的后缀按照 suffix(sa[1]), suffix(sa[2]),suffix(sa[3]), …… ,suffix(sa[n])的顺序计算，不难发现，对于每一次新加进来的后缀 suffix(sa[k]),它将产生 n-sa[k]+1 个新的前缀。但是其中有height[k]个是和前面的字符串的前缀是相同的。所以 suffix(sa[k])将“贡献”出 n-sa[k]+1- height[k]个不同的子串。累加后便是原问题的答案。这个做法的时间复杂度为 O(n)。
+**注意越界问题，m要比c（桶排序）数组的大小要小一点（来自-7的泪目）**
+
 ### 2.2.3 回文子串
 ### 2.2.4 连续重复子串
 ## 2.3 两个字符串的相关问题
