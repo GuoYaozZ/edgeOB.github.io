@@ -452,4 +452,20 @@ for(int l = 1; l < n; l++)
 ## 2.3 两个字符串的相关问题
 ### 2.3.1 公共子串
 ### 2.3.2 子串的个数
+
+* [POJ3415](http://poj.org/problem?id=3415){:target="_blank"} <br>
+这道题做到自己感觉要原地爆炸螺旋升天了，鶸太菜了<br>
+* [AC_Von](https://www.cnblogs.com/vongang/archive/2012/11/20/2778481.html){:target="_blank"} <br>
+* [Septher](https://www.cnblogs.com/luxiaoming/p/5270984.html){:target="_blank"} <br>
+* [hahalidaxin](https://www.cnblogs.com/lidaxin/p/5005079.html){:target="_blank"} <br>
+* [Clove_unique](https://blog.csdn.net/clove_unique/article/details/53889296){:target="_blank"} <br>
+暴力O(n2)一定是过不了的,需要合理利用height数组的性质进行单调栈优化可以在O(n)时间内解决<br>
+<br>
+基本思路是计算 A 的所有后缀和 B 的所有后缀之间的最长公共前缀的长度，
+把最长公共前缀长度不小于 k 的部分全部加起来。先将两个字符串连起来，中间
+用一个没有出现过的字符隔开。按 height 值分组后，接下来的工作便是快速的
+统计每组中后缀之间的最长公共前缀之和。扫描一遍，每遇到一个 B 的后缀就统
+计与前面的 A 的后缀能产生多少个长度不小于 k 的公共子串，这里 A 的后缀需要
+用一个单调的栈来高效的维护。然后对 A 也这样做一次。<br>
+10.8.18劝退:)
 ## 2.4 多个字符串的相关问题
