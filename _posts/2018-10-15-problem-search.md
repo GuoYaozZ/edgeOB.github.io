@@ -21,8 +21,8 @@ using namespace std;
 const int maxn = 105;
 bool g[maxn][maxn];
 int m, n, s;
-void init() 
-//初始化图 
+void init() //初始化图 
+
 {
     int u, v;
     memset(g, 0, sizeof g);
@@ -36,6 +36,7 @@ void init()
 void dfs(int t, int &cnt, int d, int *ns, int l)
 {
     if (d == s)//d计数器，s元数
+
     {
         ++cnt;
         return;
@@ -44,18 +45,17 @@ void dfs(int t, int &cnt, int d, int *ns, int l)
     int nwl = 0;
     for (int i = 0; i < l; ++i)
     {
-        if (!g[t][ns[i]]) continue; 
-        //t当前点 
-        nws[nwl++] = ns[i]; 
-        //nws当前点相邻的下一批点 
+        if (!g[t][ns[i]]) continue; //t当前点 
+
+        nws[nwl++] = ns[i]; //nws当前点相邻的下一批点 
+
     }
-    for (int i = 0; i < nwl; ++i) 
-    //下一批点中的这个点已不合条件
-    //即使能继续走最后也不够了 
+    for (int i = 0; i < nwl; ++i) //下一批点中的这个点已不合条件//即使能继续走最后也不够了 
+
     {
         if (nwl - i < s - d) return;
-        dfs(nws[i], cnt, d + 1, nws + (i + 1), nwl - (i + 1)); 
-        //只需要考虑i+1以后的，l同理缩短因为需要点数减少 
+        dfs(nws[i], cnt, d + 1, nws + (i + 1), nwl - (i + 1)); //只需要考虑i+1以后的，l同理缩短因为需要点数减少 
+
     }
 }
 int solve()
@@ -65,14 +65,14 @@ int solve()
     for (int i = 0; i <= n; ++i)
     {
         ns[i] = i;
-    } 
-    //初始化为全集 
+    } //初始化为全集 
+    
     int ans = 0;
     for (int i = 1; i <= n - s + 1; ++i)
     {
         int cnt = 0;
-        dfs(i, cnt, 1, ns + i + 1, n - i); 
-        //起始点，计数器，剩余点数，交集/全 
+        dfs(i, cnt, 1, ns + i + 1, n - i); //起始点，计数器，剩余点数，交集/全 
+
         ans += cnt;
     }
     return ans;
