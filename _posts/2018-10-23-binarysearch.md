@@ -132,3 +132,89 @@ int main()
     return 0;
 }
 ```
+## [poj3258](http://poj.org/problem?id=3258)
+一条河长度为L，中间有N块石头，河两端有两块石头不可移动，给出每块石头距离河岸起始端的距离，现在要移除M块石头，要求使得移除后河中间任意两块石头的最短距离尽可能大，输出最短距离，最大化最小值的经典问题<br>
+找到上界L和下界0，二分这个最短距离，用每一个mid值来模拟跳石头的过程，通过成功或者失败的方式来判断mid。
+```cpp
+typedef long long ll;
+int l, n, m, a[50003], b[50003], bot, top, mid, vis[50003], ans;
+bool check(int mid)
+{
+    int start = 0, x = 0;//start模拟位置，x模拟移除石头处
+
+    for(int i = 0; i < n; i++)
+    {
+        if(a[i] - start < mid)
+            x++;
+        else
+            start = a[i];
+    }
+    if(x > m) return false;
+    if(l - start < mid) return false;
+    return true;
+}
+int main()
+{
+    ios::sync_with_stdio(false);
+    cin >> l >> n >> m;
+    for(int i = 0; i < n; i++) cin >> a[i];
+    sort(a, a+n);
+    bot = 0, top = l;
+    while(bot <= top)
+    {
+        mid = (bot + top) / 2;
+        if(check(mid))
+            bot = mid + 1, ans = mid;
+        else
+            top = mid - 1;
+    }
+    cout << ans << endl;
+    return 0;
+}
+```
+## [poj1905](http://poj.org/problem?id=1905)
+一根杆卡在两面墙中间，现在受热弯曲，求弯曲之后杆的中点上升的距离。<br>
+是一道几何加二分的题，这道题让我认识到了计算机和笔算的不同之处XD<br>
+![avatar](/img/in-post/binary-1.png)
+根据这个图我们可以列出式子👇<br>
+1. S=(1+n*C)*L<br>
+2. 角度→弧度公式  θr = 1/2*s<br>
+3. 三角函数公式  sinθ= 1/2*L/r<br>
+4. 勾股定理  r^2 – ( r – h)^2 = (1/2*L)^2<br>
+解得👇<br>
+1. r = (4h^2 + l^2) / 8h<br>
+2. s = 2r*arcsin(l/2r)<br>
+按照我们正常做题的解h，r二元方程组由于牵扯到三角函数而变得非常麻烦，<br>
+因为用的是程序计算，我们可以逆向二分h的值，题目中恰好给出了h的范围，这样问题就变得十分简单了，通过h得到r，在丢进2式判断最终得到结果，注意精度处理即可。<br>
+```cpp
+typedef long long ll;
+bool check(double mid, double l, double n, double c)
+{
+    double r = (mid*mid + l*l/4.0) / (2 * mid);
+    if( ( l*(1+n*c) ) > ( 2*r*asin(l/(2*r)) ) )
+        return false;
+    else return true;
+}
+int main()
+{
+    ios::sync_with_stdio(false);
+    double l, n, c;
+    while(cin >> l >> n >> c)
+    {
+        if(l < 0) break;
+        double bot = 0, top = l/2.0, mid;
+        while(top - bot > 1e-7)
+        {
+            mid = (bot + top) / 2;
+            if(check(mid, l, n, c))
+                top = mid;
+            else
+                bot = mid;
+        }
+        cout << fixed << setprecision(3) << mid << endl;
+    }
+    return 0;
+}
+```
+## [poj3122](http://poj.org/problem?id=3122)
+注意精度问题和题意理解问题，，最开始看成随便分还以为求平均值。。二分水题
