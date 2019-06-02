@@ -11,14 +11,14 @@ Endless affection, mia Sofia.<br>
 Forever yours, Ezio Auditore.<br>
 
 
-# Hey!
+# HEY
 
-I comes from ZZU;<br>
-A very weak ACM player.<br>
-Like many imaginative things, like code, welcome every interesting person in the crowd.<br>
-There is not much language understanding in the front-end of the website. Please tell me in time if there is bug.<br>
+came from ZZU;<br>
+Spicy chicken ICPCer<br>
+ghosts on the keyboard<br>
+Please tell me in time if there is bug.<br>
 
-## Talk to me by 
+## Touch me
 
 * QQ: 992717747
 * [zhihu](https://www.zhihu.com/people/guo-yao-89/activities)
